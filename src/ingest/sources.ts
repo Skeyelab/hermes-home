@@ -91,8 +91,8 @@ export function parseRssFeed(xml: string, options: RssFeedOptions): SignalItem[]
 
   return items.flatMap((item) => {
     const title = normalizeText(stripHtml(extractTagValue(item, 'title')))
-    const link = normalizeText(extractTagValue(item, 'link'))
-    const guid = normalizeText(extractTagValue(item, 'guid') || link)
+    const link = normalizeText(stripHtml(extractTagValue(item, 'link')))
+    const guid = normalizeText(stripHtml(extractTagValue(item, 'guid') || link))
     const pubDate = parseDate(extractTagValue(item, 'pubDate'), new Date())
     const description = normalizeText(stripHtml(extractTagValue(item, 'description')))
 

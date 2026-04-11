@@ -26,7 +26,7 @@ function toPersistedSignal(signal: PersistedSignalInput) {
     summary: signal.summary ?? signal.title,
     practicalTip: signal.practicalTip ?? 'Keep the workflow observable and explicit.',
     topic: signal.topic ?? 'general',
-    score: scoreSignal(signal),
+    score: signal.score ?? scoreSignal(signal),
     evidence: signal.evidence ?? [],
   }
 }

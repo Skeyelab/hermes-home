@@ -77,12 +77,21 @@ export async function runSignalIngestion({
   now = new Date(),
   limit = 10,
 }: RunSignalIngestionInput): Promise<IngestionReport> {
-  const collectedBySource = await Promise.all(
+  const collectionResults = await Promise.allSettled(
     sources.map(async (source) => ({
       source: source.name,
       signals: await source.collectSignals(now),
     })),
   )
+
+  const collectedBySource = collectionResults.flatMap((result, index) => {
+    if (result.status === 'fulfilled') {
+      return [result.value]
+    }
+
+    console.error(`Failed to collect signals from source "${sources[index]?.name ?? 'unknown'}"`, result.reason)
+    return []
+  })
 
   const collectedSignals = collectedBySource.flatMap((entry) => entry.signals)
   const dedupedSignals = dedupeSignals(collectedSignals, now)
