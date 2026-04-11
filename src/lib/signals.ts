@@ -3,10 +3,16 @@ export type SignalItem = {
   title: string
   source: string
   url: string
+  sourceUrl?: string
   publishedAt: string
   mentions: number
   relevance: number
   evidenceStrength: number
+  score?: number
+  summary?: string
+  practicalTip?: string
+  topic?: string
+  evidence?: string[]
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000

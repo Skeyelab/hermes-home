@@ -1,6 +1,8 @@
 .next/
 out/
 node_modules/
+.env
+.env.local
 *.tsbuildinfo
 .yarn/cache/
 .yarn/unplugged/
