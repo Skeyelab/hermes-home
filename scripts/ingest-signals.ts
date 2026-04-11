@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 import { runDefaultSignalIngestion } from '../src/ingest/default-job'
 
 async function main() {
