@@ -3,17 +3,9 @@ import { notFound } from 'next/navigation'
 import {
   getPublishedArticlesByTopic,
   getPublishedTopicBySlug,
-  getPublishedTopics,
 } from '../../../content/articles'
 
 export const dynamic = 'force-dynamic'
-
-export async function generateStaticParams() {
-  const topics = await getPublishedTopics()
-  return topics.map((topic) => ({
-    topic: topic.topicSlug,
-  }))
-}
 
 type TopicPageProps = {
   params: any
