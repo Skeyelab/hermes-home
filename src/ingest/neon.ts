@@ -1,4 +1,5 @@
 import { Pool } from 'pg'
+import { resolveDirectDatabaseUrl } from './database-url'
 import { scoreSignal, type SignalItem } from '../lib/signals'
 import type { SignalRepository } from './pipeline'
 
@@ -122,26 +123,12 @@ export function createNeonSignalRepository(executor: SignalQueryExecutor): Signa
   }
 }
 
-export function createNeonSignalRepositoryFromUrl(
-  databaseUrl = process.env.DATABASE_URL,
-): SignalRepository {
-  if (!databaseUrl) {
-    throw new Error('DATABASE_URL is required to create the Neon signal repository.')
-  }
-
+export function createNeonSignalRepositoryFromUrl(): SignalRepository {
+  const databaseUrl = resolveDirectDatabaseUrl()
   const pool = new Pool({
     connectionString: databaseUrl,
     allowExitOnIdle: true,
   })
 
-  return {
-    async upsertSignals(signals) {
-      const client = await pool.connect()
-      try {
-        return await createNeonSignalRepository(client).upsertSignals(signals)
-      } finally {
-        client.release()
-      }
-    },
-  }
+  return createNeonSignalRepository(pool)
 }

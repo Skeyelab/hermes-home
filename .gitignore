@@ -3,6 +3,7 @@ out/
 node_modules/
 .env
 .env.local
+*.swp
 *.tsbuildinfo
 .yarn/cache/
 .yarn/unplugged/
