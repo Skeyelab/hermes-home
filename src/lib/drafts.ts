@@ -24,9 +24,32 @@ export type DraftPost = {
   sections: DraftSection[]
 }
 
+function slugify(value: string): string {
+  const slug = value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+  return slug || 'untitled-signal'
+}
+
+function buildDraftTitle(signal: SignalInsight): string {
+  const title = signal.title.trim()
+  return title || 'Untitled signal'
+}
+
+function buildDraftSlug(signal: SignalInsight, title: string): string {
+  const baseSlug = slugify(title)
+  const publishedDate = signal.publishedAt.slice(0, 10).replace(/[^0-9]/g, '')
+  const idSuffix = slugify(signal.id).slice(0, 12) || 'signal'
+
+  return [baseSlug, publishedDate || 'undated', idSuffix].join('-')
+}
+
 export function draftPostFromSignal(signal: SignalInsight): DraftPost {
-  const title = 'Agent handoffs need observable state'
-  const slug = 'agent-handoffs-need-observable-state'
+  const title = buildDraftTitle(signal)
+  const slug = buildDraftSlug(signal, title)
 
   return {
     title,
