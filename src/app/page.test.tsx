@@ -9,5 +9,7 @@ describe('homepage', () => {
     expect(html).toContain('Hermes Signal')
     expect(html).toContain('Automations are shifting toward agent handoffs')
     expect(html).toContain('AI automation')
+    expect(html).toContain('/archive/')
+    expect(html).toContain('/articles/automations-are-shifting-toward-agent-handoffs-20260411-signal-1/')
   })
 })
