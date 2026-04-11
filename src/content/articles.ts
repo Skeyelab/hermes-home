@@ -45,6 +45,8 @@ function toPublishedArticle(record: DraftPostRecord): PublishedArticle {
     title: record.title,
     slug: record.slug,
     excerpt: record.excerpt,
+    // publishedAt is set when a draft is approved; fall back to generatedAt
+    // for drafts that were published before the column was populated.
     publishedAt: record.publishedAt ?? record.generatedAt,
     topic: record.topic,
     topicSlug: buildTopicSlug(record.topic),
