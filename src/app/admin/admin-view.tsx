@@ -45,7 +45,7 @@ export function AdminDraftsView({
               <div className="asset-grid" aria-label="Draft assets">
                 {draft.assets.map((asset) => (
                   <figure key={`${draft.slug}-${asset.sortOrder}`} className="asset">
-                    <img alt={asset.altText} src={asset.assetUrl} />
+                    <img alt={asset.altText} src={asset.assetUrl} loading="lazy" decoding="async" />
                     <figcaption>
                       <span>{asset.kind}</span>
                       <span>{asset.prompt}</span>

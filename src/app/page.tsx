@@ -23,7 +23,7 @@ export default function Page() {
             <div className="asset-grid" aria-label="Article assets">
               {article.assets.map((asset) => (
                 <figure key={`${article.slug}-${asset.sortOrder}`} className="asset">
-                  <img alt={asset.altText} src={asset.assetUrl} />
+                  <img alt={asset.altText} src={asset.assetUrl} loading="lazy" decoding="async" />
                   <figcaption>
                     <span>{asset.kind}</span>
                     <span>{asset.prompt}</span>
