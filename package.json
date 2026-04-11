@@ -9,7 +9,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "dev": "next dev",
-    "ingest:signals": "tsx scripts/ingest-signals.ts",
+    "ingest:signals": "tsx --env-file=.env scripts/ingest-signals.ts",
     "build": "next build --webpack",
     "start": "next start -H 0.0.0.0"
   },
