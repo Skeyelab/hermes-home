@@ -13,6 +13,8 @@ This file is the first thing an agent should read before changing this repo.
 3. Add or update tests with the code change.
 4. Run targeted verification first, then broader checks if the change is non-trivial.
 5. Commit on a feature branch. Do not work directly on `main`.
+6. After opening a PR, check CI and Coolify deployment status until they are healthy.
+7. Review PR comments, especially Copilot comments, and address them promptly.
 
 ## Required conventions
 - Use **Yarn** for package management and scripts.
