@@ -1,11 +1,11 @@
 [phases.install]
-cmds = ["yarn install --frozen-lockfile"]
+cmds = ["corepack enable && corepack prepare yarn@1.22.22 --activate && yarn install --frozen-lockfile"]
 cacheDirectories = ["node_modules/.cache"]
 
 [phases.build]
 dependsOn = ["install"]
-cmds = ["yarn build"]
+cmds = ["corepack enable && corepack prepare yarn@1.22.22 --activate && yarn build"]
 cacheDirectories = [".next/cache"]
 
 [start]
-cmd = "yarn start"
+cmd = "corepack enable && corepack prepare yarn@1.22.22 --activate && yarn start"
