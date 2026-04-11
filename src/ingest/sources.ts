@@ -27,6 +27,7 @@ export type RedditListing = {
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000
+const FETCH_TIMEOUT_MS = 10_000
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
@@ -142,9 +143,8 @@ export function parseRedditListing(listing: RedditListing, options: RedditListin
 }
 
 export async function collectRssSignals(feedUrl: string, source: string): Promise<SignalItem[]> {
-  const timeoutMs = 10_000
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
 
   try {
     const response = await fetch(feedUrl, {
@@ -162,7 +162,7 @@ export async function collectRssSignals(feedUrl: string, source: string): Promis
     return parseRssFeed(await response.text(), { source, sourceUrl: feedUrl })
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error(`Timed out fetching RSS feed ${feedUrl} after ${timeoutMs}ms`)
+      throw new Error(`Timed out fetching RSS feed ${feedUrl} after ${FETCH_TIMEOUT_MS}ms`)
     }
 
     throw error
@@ -173,9 +173,8 @@ export async function collectRssSignals(feedUrl: string, source: string): Promis
 
 export async function collectRedditSignals(subreddit: string): Promise<SignalItem[]> {
   const sourceUrl = `https://www.reddit.com/r/${subreddit}/new.json?limit=25`
-  const timeoutMs = 10_000
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
 
   try {
     const response = await fetch(sourceUrl, {
@@ -196,7 +195,7 @@ export async function collectRedditSignals(subreddit: string): Promise<SignalIte
     })
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error(`Timed out fetching Reddit listing ${sourceUrl} after ${timeoutMs}ms`)
+      throw new Error(`Timed out fetching Reddit listing ${sourceUrl} after ${FETCH_TIMEOUT_MS}ms`)
     }
 
     throw error
