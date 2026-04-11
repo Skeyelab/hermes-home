@@ -101,6 +101,13 @@ describe('neon drafting adapters', () => {
             prompt: 'Prompt',
             sortOrder: 0,
           },
+          {
+            kind: 'social',
+            assetUrl: 'https://example.com/social.png',
+            altText: 'Social image',
+            prompt: 'Prompt 2',
+            sortOrder: 1,
+          },
         ],
       },
     ])
@@ -112,6 +119,7 @@ describe('neon drafting adapters', () => {
       'delete from draft_sections where draft_post_id = $1',
       'delete from draft_assets where draft_post_id = $1',
       expect.stringContaining('insert into draft_sections'),
+      expect.stringContaining('insert into draft_assets'),
       expect.stringContaining('insert into draft_assets'),
       'COMMIT',
     ])

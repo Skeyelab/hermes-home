@@ -20,6 +20,17 @@ export default function Page() {
             <p className="meta">{article.topic}</p>
             <h2>{article.title}</h2>
             <p>{article.excerpt}</p>
+            <div className="asset-grid" aria-label="Article assets">
+              {article.assets.map((asset) => (
+                <figure key={`${article.slug}-${asset.sortOrder}`} className="asset">
+                  <img alt={asset.altText} src={asset.assetUrl} />
+                  <figcaption>
+                    <span>{asset.kind}</span>
+                    <span>{asset.prompt}</span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
             <div className="sections">
               {article.sections.map((section) => (
                 <div key={section.heading} className="section">

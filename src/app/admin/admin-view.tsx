@@ -42,6 +42,17 @@ export function AdminDraftsView({
               </p>
               <h2>{draft.title}</h2>
               <p>{draft.excerpt}</p>
+              <div className="asset-grid" aria-label="Draft assets">
+                {draft.assets.map((asset) => (
+                  <figure key={`${draft.slug}-${asset.sortOrder}`} className="asset">
+                    <img alt={asset.altText} src={asset.assetUrl} />
+                    <figcaption>
+                      <span>{asset.kind}</span>
+                      <span>{asset.prompt}</span>
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
               <div className="sections">
                 {draft.sections.map((section) => (
                   <div key={`${draft.slug}-${section.sectionKey}`} className="section">

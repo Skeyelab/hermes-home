@@ -96,7 +96,7 @@ function toDraftRecord(signal: RankedSignalItem, generatedAt: Date): DraftRecord
       body: section.body,
       sortOrder: index,
     })),
-    assets: [],
+    assets: draft.assets,
   }
 }
 
