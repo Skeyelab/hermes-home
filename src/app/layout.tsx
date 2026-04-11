@@ -2,7 +2,10 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Hermes Signal',
+  title: {
+    default: 'Hermes Signal',
+    template: '%s | Hermes Signal',
+  },
   description: 'Signal-based AI and automation tips from Hermes.',
 }
 

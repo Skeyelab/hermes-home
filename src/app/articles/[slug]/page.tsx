@@ -1,0 +1,86 @@
+import Link from 'next/link'
+import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { getPublishedArticleBySlug, getPublishedArticles } from '../../../content/articles'
+
+type ArticlePageProps = {
+  params: any
+}
+
+export function generateStaticParams() {
+  return getPublishedArticles().map((article) => ({
+    slug: article.slug,
+  }))
+}
+
+export function generateMetadata({ params }: ArticlePageProps): Metadata {
+  const article = getPublishedArticleBySlug(params.slug)
+  if (!article) {
+    return {
+      title: 'Article not found',
+      description: 'The requested Hermes Signal article could not be found.',
+    }
+  }
+
+  return {
+    title: article.title,
+    description: article.excerpt,
+  }
+}
+
+export default function ArticlePage({ params }: ArticlePageProps) {
+  const article = getPublishedArticleBySlug(params.slug)
+
+  if (!article) {
+    notFound()
+  }
+
+  return (
+    <main className="site-shell article-layout">
+      <section className="hero">
+        <p className="eyebrow">
+          <Link className="inline-link" href="/archive/">
+            Archive
+          </Link>
+          {' · '}
+          <Link className="inline-link" href={`/topics/${article.topicSlug}/`}>
+            {article.topic}
+          </Link>
+        </p>
+        <h1>{article.title}</h1>
+        <p className="lede">{article.excerpt}</p>
+        <div className="hero-actions">
+          <Link className="button" href="/archive/">
+            Back to archive
+          </Link>
+          <Link className="button button-secondary" href={`/topics/${article.topicSlug}/`}>
+            More {article.topic}
+          </Link>
+        </div>
+      </section>
+
+      <section className="article-body">
+        <div className="asset-grid" aria-label="Article assets">
+          {article.assets.map((asset) => (
+            <figure key={`${article.slug}-${asset.sortOrder}`} className="asset">
+              <img alt={asset.altText} src={asset.assetUrl} loading="lazy" decoding="async" />
+              <figcaption>
+                <span>{asset.kind}</span>
+                <span>{asset.prompt}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+
+        <div className="sections">
+          {article.sections.map((section) => (
+            <div key={section.heading} className="section">
+              <h2>{section.heading}</h2>
+              <p>{section.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </main>
+  )
+}
