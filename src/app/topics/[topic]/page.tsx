@@ -47,7 +47,7 @@ export default function TopicPage({ params }: TopicPageProps) {
         <h1>{topic.topic}</h1>
         <p className="lede">All Hermes Signal articles currently published under this topic.</p>
         <div className="hero-actions">
-          <Link className="button" href="/archive/">
+          <Link className="button" href="/archive">
             Back to archive
           </Link>
           <Link className="button button-secondary" href="/">

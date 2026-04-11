@@ -15,11 +15,11 @@ export default function Page() {
           practical posts you can actually use.
         </p>
         <div className="hero-actions">
-          <Link className="button" href="/archive/">
+          <Link className="button" href="/archive">
             Browse the archive
           </Link>
           {topics[0] ? (
-            <Link className="button button-secondary" href={`/topics/${topics[0].topicSlug}/`}>
+            <Link className="button button-secondary" href={`/topics/${topics[0].topicSlug}`}>
               Browse {topics[0].topic}
             </Link>
           ) : null}

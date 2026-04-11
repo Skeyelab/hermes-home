@@ -39,21 +39,21 @@ export default function ArticlePage({ params }: ArticlePageProps) {
     <main className="site-shell article-layout">
       <section className="hero">
         <p className="eyebrow">
-          <Link className="inline-link" href="/archive/">
+          <Link className="inline-link" href="/archive">
             Archive
           </Link>
           {' · '}
-          <Link className="inline-link" href={`/topics/${article.topicSlug}/`}>
+          <Link className="inline-link" href={`/topics/${article.topicSlug}`}>
             {article.topic}
           </Link>
         </p>
         <h1>{article.title}</h1>
         <p className="lede">{article.excerpt}</p>
         <div className="hero-actions">
-          <Link className="button" href="/archive/">
+          <Link className="button" href="/archive">
             Back to archive
           </Link>
-          <Link className="button button-secondary" href={`/topics/${article.topicSlug}/`}>
+          <Link className="button button-secondary" href={`/topics/${article.topicSlug}`}>
             More {article.topic}
           </Link>
         </div>
