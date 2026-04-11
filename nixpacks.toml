@@ -1,6 +1,3 @@
-# Coolify / Nixpacks — merged with the Node provider plan (see https://nixpacks.com/docs/configuration/file )
-# In Coolify: set the application build pack to Nixpacks (not Dockerfile).
-
 [phases.install]
 cmds = ["yarn install --frozen-lockfile"]
 cacheDirectories = ["node_modules/.cache"]
