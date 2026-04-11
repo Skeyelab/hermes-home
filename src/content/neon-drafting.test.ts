@@ -30,7 +30,10 @@ describe('neon drafting adapters', () => {
         }
 
         return {
-          rows: [{ evidence_text: 'First evidence' }, { evidence_text: 'Second evidence' }],
+          rows: [
+            { signal_item_id: 'signal-db-1', evidence_text: 'First evidence' },
+            { signal_item_id: 'signal-db-1', evidence_text: 'Second evidence' },
+          ],
         }
       },
     }
@@ -62,8 +65,8 @@ describe('neon drafting adapters', () => {
 
   it('persists drafts with sections and assets in Neon', async () => {
     const queries: Array<{ sql: string; params?: unknown[] }> = []
-    const executor: ContentQueryExecutor = {
-      query: async (sql, params) => {
+    const mockClient = {
+      query: async (sql: string, params?: unknown[]) => {
         queries.push({ sql, params })
 
         if (sql.includes('insert into draft_posts')) {
@@ -72,9 +75,11 @@ describe('neon drafting adapters', () => {
 
         return { rows: [] }
       },
+      release: () => {},
     }
+    const pool = { connect: async () => mockClient }
 
-    const repository = createNeonDraftRepository(executor)
+    const repository = createNeonDraftRepository(pool as any)
     const result = await repository.upsertDrafts([
       {
         signalItemId: 'signal-db-1',

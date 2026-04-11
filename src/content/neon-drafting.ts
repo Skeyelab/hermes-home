@@ -1,6 +1,6 @@
 import { Pool } from 'pg'
 import { resolveDirectDatabaseUrl } from '../ingest/database-url'
-import type { ContentQueryExecutor, DraftAssetRecord, DraftSectionRecord } from './store'
+import type { ContentQueryExecutor } from './store'
 import type {
   DraftGenerationSource,
   DraftRecordInput,
@@ -9,39 +9,36 @@ import type {
 } from './drafting'
 
 function toIsoString(value: Date | string | null | undefined): string {
+  const fallback = new Date(0).toISOString()
+
   if (!value) {
-    return new Date(0).toISOString()
+    return fallback
   }
 
   if (value instanceof Date) {
-    return value.toISOString()
+    return Number.isFinite(value.getTime()) ? value.toISOString() : fallback
   }
 
-  return new Date(value).toISOString()
+  const date = new Date(value)
+  return Number.isFinite(date.getTime()) ? date.toISOString() : fallback
 }
 
 function toNumber(value: unknown): number {
   if (typeof value === 'number') {
-    return value
+    return Number.isFinite(value) ? value : 0
   }
 
   if (typeof value === 'string') {
-    return Number(value)
+    const trimmed = value.trim()
+    if (trimmed === '') {
+      return 0
+    }
+
+    const parsed = Number(trimmed)
+    return Number.isFinite(parsed) ? parsed : 0
   }
 
   return 0
-}
-
-async function loadSignalEvidence(executor: ContentQueryExecutor, signalItemId: string): Promise<string[]> {
-  const result = await executor.query(
-    `select evidence_text
-     from signal_evidence
-     where signal_item_id = $1
-     order by sort_order asc`,
-    [signalItemId],
-  )
-
-  return result.rows.map((row) => String((row as { evidence_text?: string }).evidence_text ?? ''))
 }
 
 export function createNeonDraftSource(executor: ContentQueryExecutor): DraftGenerationSource {
@@ -55,55 +52,65 @@ export function createNeonDraftSource(executor: ContentQueryExecutor): DraftGene
         [limit],
       )
 
-      const signals = await Promise.all(
-        result.rows.map(async (row) => {
-          const signal = row as {
-            id: string
-            source_item_id: string
-            source: string
-            title: string
-            canonical_url: string
-            source_url?: string | null
-            published_at: Date | string | null
-            summary: string
-            practical_tip: string
-            topic: string
-            score: number | string
-          }
+      const rows = result.rows as Array<{
+        id: string
+        source_item_id: string
+        source: string
+        title: string
+        canonical_url: string
+        source_url?: string | null
+        published_at: Date | string | null
+        summary: string
+        practical_tip: string
+        topic: string
+        score: number | string
+      }>
 
-          const evidence = await loadSignalEvidence(executor, signal.id)
+      const signalIds = rows.map((r) => r.id)
 
-          return {
-            databaseId: signal.id,
-            id: signal.source_item_id,
-            title: signal.title,
-            source: signal.source,
-            url: signal.canonical_url,
-            publishedAt: toIsoString(signal.published_at),
-            score: toNumber(signal.score),
-            summary: signal.summary,
-            evidence,
-            practicalTip: signal.practical_tip,
-            topic: signal.topic,
-          } satisfies RankedSignalItem
-        }),
+      const evidenceResult = await executor.query(
+        `select signal_item_id, evidence_text
+         from signal_evidence
+         where signal_item_id = any($1)
+         order by sort_order asc`,
+        [signalIds],
       )
 
-      return signals
+      const evidenceBySignalId = new Map<string, string[]>()
+      for (const row of evidenceResult.rows as Array<{ signal_item_id: string; evidence_text?: string }>) {
+        const list = evidenceBySignalId.get(row.signal_item_id) ?? []
+        list.push(String(row.evidence_text ?? ''))
+        evidenceBySignalId.set(row.signal_item_id, list)
+      }
+
+      return rows.map((signal) => ({
+        databaseId: signal.id,
+        id: signal.source_item_id,
+        title: signal.title,
+        source: signal.source,
+        url: signal.canonical_url,
+        publishedAt: toIsoString(signal.published_at),
+        score: toNumber(signal.score),
+        summary: signal.summary,
+        evidence: evidenceBySignalId.get(signal.id) ?? [],
+        practicalTip: signal.practical_tip,
+        topic: signal.topic,
+      } satisfies RankedSignalItem))
     },
   }
 }
 
-export function createNeonDraftRepository(executor: ContentQueryExecutor): DraftRepository {
+export function createNeonDraftRepository(pool: Pool): DraftRepository {
   return {
     async upsertDrafts(drafts) {
+      const client = await pool.connect()
       let inserted = 0
       let updated = 0
 
-      await executor.query('BEGIN')
+      await client.query('BEGIN')
       try {
         for (const draft of drafts) {
-          const draftResult = await executor.query(
+          const draftResult = await client.query(
             `insert into draft_posts (
               signal_item_id,
               title,
@@ -155,11 +162,11 @@ export function createNeonDraftRepository(executor: ContentQueryExecutor): Draft
             updated += 1
           }
 
-          await executor.query('delete from draft_sections where draft_post_id = $1', [draftPostId])
-          await executor.query('delete from draft_assets where draft_post_id = $1', [draftPostId])
+          await client.query('delete from draft_sections where draft_post_id = $1', [draftPostId])
+          await client.query('delete from draft_assets where draft_post_id = $1', [draftPostId])
 
           for (const section of draft.sections) {
-            await executor.query(
+            await client.query(
               `insert into draft_sections (
                 draft_post_id,
                 sort_order,
@@ -182,7 +189,7 @@ export function createNeonDraftRepository(executor: ContentQueryExecutor): Draft
           }
 
           for (const asset of draft.assets) {
-            await executor.query(
+            await client.query(
               `insert into draft_assets (
                 draft_post_id,
                 sort_order,
@@ -208,10 +215,12 @@ export function createNeonDraftRepository(executor: ContentQueryExecutor): Draft
           }
         }
 
-        await executor.query('COMMIT')
+        await client.query('COMMIT')
       } catch (error) {
-        await executor.query('ROLLBACK')
+        await client.query('ROLLBACK')
         throw error
+      } finally {
+        client.release()
       }
 
       return { inserted, updated }
@@ -219,22 +228,24 @@ export function createNeonDraftRepository(executor: ContentQueryExecutor): Draft
   }
 }
 
-export function createNeonDraftSourceFromUrl(): DraftGenerationSource {
-  const databaseUrl = resolveDirectDatabaseUrl()
-  const pool = new Pool({
-    connectionString: databaseUrl,
-    allowExitOnIdle: true,
-  })
+let cachedPool: Pool | null = null
 
-  return createNeonDraftSource(pool)
+function getOrCreatePool(): Pool {
+  if (!cachedPool) {
+    const databaseUrl = resolveDirectDatabaseUrl()
+    cachedPool = new Pool({
+      connectionString: databaseUrl,
+      allowExitOnIdle: true,
+    })
+  }
+
+  return cachedPool
+}
+
+export function createNeonDraftSourceFromUrl(): DraftGenerationSource {
+  return createNeonDraftSource(getOrCreatePool())
 }
 
 export function createNeonDraftRepositoryFromUrl(): DraftRepository {
-  const databaseUrl = resolveDirectDatabaseUrl()
-  const pool = new Pool({
-    connectionString: databaseUrl,
-    allowExitOnIdle: true,
-  })
-
-  return createNeonDraftRepository(pool)
+  return createNeonDraftRepository(getOrCreatePool())
 }

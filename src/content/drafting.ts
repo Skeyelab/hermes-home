@@ -1,5 +1,5 @@
 import { draftPostFromSignal, type SignalInsight } from '../lib/drafts'
-import type { DraftAssetRecord, DraftPostRecord, DraftSectionRecord } from './store'
+import type { DraftPostRecord } from './store'
 
 export type RankedSignalItem = {
   databaseId: string
@@ -35,11 +35,7 @@ export type DraftRepository = {
   }>
 }
 
-export type DraftRecordInput = Omit<DraftPostRecord, 'id'> & {
-  signalItemId: string
-  sections: DraftSectionRecord[]
-  assets: DraftAssetRecord[]
-}
+export type DraftRecordInput = Omit<DraftPostRecord, 'id'>
 
 export type DraftGenerationReport = {
   generated: number
