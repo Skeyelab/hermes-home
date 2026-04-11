@@ -7,7 +7,7 @@ describe('homepage', () => {
     const html = renderToStaticMarkup(Page())
 
     expect(html).toContain('Hermes Signal')
-    expect(html).toContain('Agent handoffs need observable state')
+    expect(html).toContain('Automations are shifting toward agent handoffs')
     expect(html).toContain('AI automation')
   })
 })
