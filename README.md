@@ -28,4 +28,10 @@ yarn vitest run
 yarn build
 ```
 
-The site is configured for static export so it can deploy to GitHub Pages.
+## Ingest trends
+
+```bash
+yarn ingest:signals
+```
+
+The ingestion job reads from public trend sources and stores ranked signals in Neon using `DATABASE_URL`.
