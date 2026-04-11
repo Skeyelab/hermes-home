@@ -2,6 +2,9 @@ import { createNeonContentStoreFromUrl } from '../../content/store'
 import { AdminDraftsView } from './admin-view'
 import { approveDraftAction, rejectDraftAction } from './actions'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AdminPage() {
   const store = createNeonContentStoreFromUrl()
   const summaryDrafts = await store.listDraftPosts()
