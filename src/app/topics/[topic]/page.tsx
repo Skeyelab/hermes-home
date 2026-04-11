@@ -6,8 +6,11 @@ import {
   getPublishedTopics,
 } from '../../../content/articles'
 
-export function generateStaticParams() {
-  return getPublishedTopics().map((topic) => ({
+export const dynamic = 'force-dynamic'
+
+export async function generateStaticParams() {
+  const topics = await getPublishedTopics()
+  return topics.map((topic) => ({
     topic: topic.topicSlug,
   }))
 }
@@ -16,8 +19,8 @@ type TopicPageProps = {
   params: any
 }
 
-export function generateMetadata({ params }: TopicPageProps): Metadata {
-  const topic = getPublishedTopicBySlug(params.topic)
+export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
+  const topic = await getPublishedTopicBySlug(params.topic)
   if (!topic) {
     return {
       title: 'Topic not found',
@@ -31,9 +34,9 @@ export function generateMetadata({ params }: TopicPageProps): Metadata {
   }
 }
 
-export default function TopicPage({ params }: TopicPageProps) {
-  const topic = getPublishedTopicBySlug(params.topic)
-  const articles = getPublishedArticlesByTopic(params.topic)
+export default async function TopicPage({ params }: TopicPageProps) {
+  const topic = await getPublishedTopicBySlug(params.topic)
+  const articles = await getPublishedArticlesByTopic(params.topic)
 
   if (!topic || articles.length === 0) {
     notFound()
