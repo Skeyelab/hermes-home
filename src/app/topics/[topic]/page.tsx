@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import {
@@ -47,12 +46,12 @@ export default function TopicPage({ params }: TopicPageProps) {
         <h1>{topic.topic}</h1>
         <p className="lede">All Hermes Signal articles currently published under this topic.</p>
         <div className="hero-actions">
-          <Link className="button" href="/archive">
+          <a className="button" href="/archive/">
             Back to archive
-          </Link>
-          <Link className="button button-secondary" href="/">
+          </a>
+          <a className="button button-secondary" href="/">
             Home
-          </Link>
+          </a>
         </div>
       </section>
 
@@ -61,15 +60,15 @@ export default function TopicPage({ params }: TopicPageProps) {
           <article className="card" key={article.slug}>
             <p className="meta">{article.publishedAt.slice(0, 10)}</p>
             <h2>
-              <Link className="inline-link" href={`/articles/${article.slug}/`}>
+              <a className="inline-link" href={`/articles/${article.slug}/`}>
                 {article.title}
-              </Link>
+              </a>
             </h2>
             <p>{article.excerpt}</p>
             <div className="card-actions">
-              <Link className="button button-secondary" href={`/articles/${article.slug}/`}>
+              <a className="button button-secondary" href={`/articles/${article.slug}/`}>
                 Read article
-              </Link>
+              </a>
             </div>
           </article>
         ))}

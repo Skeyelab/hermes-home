@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { getPublishedArticles, getPublishedTopics } from '../content/articles'
 
 export default function Page() {
@@ -15,13 +14,13 @@ export default function Page() {
           practical posts you can actually use.
         </p>
         <div className="hero-actions">
-          <Link className="button" href="/archive">
+          <a className="button" href="/archive/">
             Browse the archive
-          </Link>
+          </a>
           {topics[0] ? (
-            <Link className="button button-secondary" href={`/topics/${topics[0].topicSlug}`}>
+            <a className="button button-secondary" href={`/topics/${topics[0].topicSlug}/`}>
               Browse {topics[0].topic}
-            </Link>
+            </a>
           ) : null}
         </div>
       </section>
@@ -33,12 +32,12 @@ export default function Page() {
             <h2>{article.title}</h2>
             <p>{article.excerpt}</p>
             <div className="card-actions">
-              <Link className="button button-secondary" href={`/articles/${article.slug}/`}>
+              <a className="button button-secondary" href={`/articles/${article.slug}/`}>
                 Read article
-              </Link>
-              <Link className="inline-link" href={`/topics/${article.topicSlug}/`}>
+              </a>
+              <a className="inline-link" href={`/topics/${article.topicSlug}/`}>
                 Browse topic
-              </Link>
+              </a>
             </div>
             <div className="asset-grid" aria-label="Article assets">
               {article.assets.map((asset) => (

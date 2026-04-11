@@ -7,7 +7,7 @@ describe('archive page', () => {
     const html = renderToStaticMarkup(ArchivePage())
 
     expect(html).toContain('Published Hermes Signal articles, grouped by topic.')
-    expect(html).toContain('/topics/ai-automation')
-    expect(html).toContain('/articles/automations-are-shifting-toward-agent-handoffs-20260411-signal-1')
+    expect(html).toContain('/topics/ai-automation/')
+    expect(html).toContain('/articles/automations-are-shifting-toward-agent-handoffs-20260411-signal-1/')
   })
 })

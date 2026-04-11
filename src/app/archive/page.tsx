@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getPublishedArticles, getPublishedTopics } from '../../content/articles'
 
@@ -21,13 +20,13 @@ export default function ArchivePage() {
           and the archive makes the content easy to scan by topic.
         </p>
         <div className="hero-actions">
-          <Link className="button" href="/">
+          <a className="button" href="/">
             Back to home
-          </Link>
+          </a>
           {topics[0] ? (
-            <Link className="button button-secondary" href={`/topics/${topics[0].topicSlug}`}>
+            <a className="button button-secondary" href={`/topics/${topics[0].topicSlug}/`}>
               View {topics[0].topic}
-            </Link>
+            </a>
           ) : null}
         </div>
       </section>
@@ -37,10 +36,10 @@ export default function ArchivePage() {
           <p className="meta">Topics</p>
           <div className="topic-list">
             {topics.map((topic) => (
-              <Link key={topic.topicSlug} className="topic-pill" href={`/topics/${topic.topicSlug}`}>
+              <a key={topic.topicSlug} className="topic-pill" href={`/topics/${topic.topicSlug}/`}>
                 <span>{topic.topic}</span>
                 <span>{topic.count}</span>
-              </Link>
+              </a>
             ))}
           </div>
         </div>
@@ -49,20 +48,20 @@ export default function ArchivePage() {
           {articles.map((article) => (
             <article className="card" key={article.slug}>
               <p className="meta">
-                <Link className="inline-link" href={`/topics/${article.topicSlug}`}>
+                <a className="inline-link" href={`/topics/${article.topicSlug}/`}>
                   {article.topic}
-                </Link>
+                </a>
               </p>
               <h2>
-                <Link className="inline-link" href={`/articles/${article.slug}`}>
+                <a className="inline-link" href={`/articles/${article.slug}/`}>
                   {article.title}
-                </Link>
+                </a>
               </h2>
               <p>{article.excerpt}</p>
               <div className="card-actions">
-                <Link className="button button-secondary" href={`/articles/${article.slug}`}>
+                <a className="button button-secondary" href={`/articles/${article.slug}/`}>
                   Read article
-                </Link>
+                </a>
               </div>
             </article>
           ))}

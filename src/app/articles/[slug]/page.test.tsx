@@ -10,7 +10,7 @@ describe('article page', () => {
 
     expect(html).toContain('Automations are shifting toward agent handoffs')
     expect(html).toContain('The signal')
-    expect(html).toContain('/topics/ai-automation')
-    expect(html).toContain('/archive')
+    expect(html).toContain('/topics/ai-automation/')
+    expect(html).toContain('/archive/')
   })
 })

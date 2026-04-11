@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getPublishedArticleBySlug, getPublishedArticles } from '../../../content/articles'
@@ -39,23 +38,23 @@ export default function ArticlePage({ params }: ArticlePageProps) {
     <main className="site-shell article-layout">
       <section className="hero">
         <p className="eyebrow">
-          <Link className="inline-link" href="/archive">
+          <a className="inline-link" href="/archive/">
             Archive
-          </Link>
+          </a>
           {' · '}
-          <Link className="inline-link" href={`/topics/${article.topicSlug}`}>
+          <a className="inline-link" href={`/topics/${article.topicSlug}/`}>
             {article.topic}
-          </Link>
+          </a>
         </p>
         <h1>{article.title}</h1>
         <p className="lede">{article.excerpt}</p>
         <div className="hero-actions">
-          <Link className="button" href="/archive">
+          <a className="button" href="/archive/">
             Back to archive
-          </Link>
-          <Link className="button button-secondary" href={`/topics/${article.topicSlug}`}>
+          </a>
+          <a className="button button-secondary" href={`/topics/${article.topicSlug}/`}>
             More {article.topic}
-          </Link>
+          </a>
         </div>
       </section>
 
