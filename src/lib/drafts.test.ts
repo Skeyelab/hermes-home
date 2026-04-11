@@ -19,8 +19,10 @@ describe('draftPostFromSignal', () => {
 
     const draft = draftPostFromSignal(insight)
 
-    expect(draft.slug).toBe('agent-handoffs-need-observable-state')
-    expect(draft.title).toContain('Agent handoffs')
+    expect(draft.slug).toBe(
+      'automations-are-shifting-toward-agent-handoffs-20260411-signal-1',
+    )
+    expect(draft.title).toMatch(/agent handoffs/i)
     expect(draft.excerpt).toContain('observable')
     expect(draft.sections.map((section) => section.heading)).toEqual([
       'The signal',

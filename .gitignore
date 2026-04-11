@@ -1,6 +1,7 @@
 .next/
 out/
 node_modules/
+*.tsbuildinfo
 .yarn/cache/
 .yarn/unplugged/
 .yarn/build-state.yml
