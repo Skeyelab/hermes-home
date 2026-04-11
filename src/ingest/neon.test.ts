@@ -35,6 +35,7 @@ describe('createNeonSignalRepository', () => {
     expect(calls.map((call) => call.sql)).toEqual([
       'BEGIN',
       expect.stringContaining('insert into signal_items'),
+      'delete from signal_evidence where signal_item_id = $1',
       'COMMIT',
     ])
 

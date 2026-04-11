@@ -142,39 +142,72 @@ export function parseRedditListing(listing: RedditListing, options: RedditListin
 }
 
 export async function collectRssSignals(feedUrl: string, source: string): Promise<SignalItem[]> {
-  const response = await fetch(feedUrl, {
-    headers: {
-      accept: 'application/rss+xml, application/xml;q=0.9, */*;q=0.1',
-      'user-agent': 'HermesSignal/1.0 (+https://hermes.ger3.ericdahl.dev)',
-    },
-  })
+  const timeoutMs = 10_000
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch RSS feed ${feedUrl}: ${response.status} ${response.statusText}`)
+  try {
+    const response = await fetch(feedUrl, {
+      headers: {
+        accept: 'application/rss+xml, application/xml;q=0.9, */*;q=0.1',
+        'user-agent': 'HermesSignal/1.0 (+https://hermes.ger3.ericdahl.dev)',
+      },
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch RSS feed ${feedUrl}: ${response.status} ${response.statusText}`)
+    }
+
+    return parseRssFeed(await response.text(), { source, sourceUrl: feedUrl })
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error(`Timed out fetching RSS feed ${feedUrl} after ${timeoutMs}ms`)
+    }
+
+    throw error
+  } finally {
+    clearTimeout(timeoutId)
   }
-
-  return parseRssFeed(await response.text(), { source, sourceUrl: feedUrl })
 }
 
 export async function collectRedditSignals(subreddit: string): Promise<SignalItem[]> {
   const sourceUrl = `https://www.reddit.com/r/${subreddit}/new.json?limit=25`
-  const response = await fetch(sourceUrl, {
-    headers: {
-      accept: 'application/json',
-      'user-agent': 'HermesSignal/1.0 (+https://hermes.ger3.ericdahl.dev)',
-    },
-  })
+  const timeoutMs = 10_000
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch Reddit listing ${sourceUrl}: ${response.status} ${response.statusText}`)
+  try {
+    const response = await fetch(sourceUrl, {
+      headers: {
+        accept: 'application/json',
+        'user-agent': 'HermesSignal/1.0 (+https://hermes.ger3.ericdahl.dev)',
+      },
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch Reddit listing ${sourceUrl}: ${response.status} ${response.statusText}`)
+    }
+
+    return parseRedditListing((await response.json()) as RedditListing, {
+      subreddit,
+      sourceUrl,
+    })
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error(`Timed out fetching Reddit listing ${sourceUrl} after ${timeoutMs}ms`)
+    }
+
+    throw error
+  } finally {
+    clearTimeout(timeoutId)
   }
-
-  return parseRedditListing((await response.json()) as RedditListing, {
-    subreddit,
-    sourceUrl,
-  })
 }
 
 export function scoreAgeInDays(publishedAt: string, now = new Date()) {
-  return Math.max(0, (now.getTime() - new Date(publishedAt).getTime()) / DAY_MS)
+  const publishedAtMs = new Date(publishedAt).getTime()
+  if (Number.isNaN(publishedAtMs)) return 0
+
+  return Math.max(0, (now.getTime() - publishedAtMs) / DAY_MS)
 }

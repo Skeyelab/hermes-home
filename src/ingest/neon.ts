@@ -77,7 +77,7 @@ async function upsertOneSignal(
   const inserted = Boolean(row?.inserted)
   const signalItemId = row?.id
 
-  if (signalItemId && payload.evidence.length > 0) {
+  if (signalItemId) {
     await executor.query('delete from signal_evidence where signal_item_id = $1', [signalItemId])
 
     for (const [index, evidenceText] of payload.evidence.entries()) {
@@ -129,6 +129,19 @@ export function createNeonSignalRepositoryFromUrl(
     throw new Error('DATABASE_URL is required to create the Neon signal repository.')
   }
 
-  const pool = new Pool({ connectionString: databaseUrl })
-  return createNeonSignalRepository(pool)
+  const pool = new Pool({
+    connectionString: databaseUrl,
+    allowExitOnIdle: true,
+  })
+
+  return {
+    async upsertSignals(signals) {
+      const client = await pool.connect()
+      try {
+        return await createNeonSignalRepository(client).upsertSignals(signals)
+      } finally {
+        client.release()
+      }
+    },
+  }
 }

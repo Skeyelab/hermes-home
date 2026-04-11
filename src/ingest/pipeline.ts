@@ -86,7 +86,10 @@ export async function runSignalIngestion({
 
   const collectedSignals = collectedBySource.flatMap((entry) => entry.signals)
   const dedupedSignals = dedupeSignals(collectedSignals, now)
-  const topSignals = selectTopSignals(dedupedSignals, limit, now)
+  const topSignals = selectTopSignals(dedupedSignals, limit, now).map((signal) => ({
+    ...signal,
+    score: scoreSignal(signal, now),
+  }))
   const result = await repository.upsertSignals(topSignals)
 
   return {
