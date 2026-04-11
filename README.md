@@ -1,24 +1,31 @@
-# Hermes // Signal House
+# Hermes Signal
 
-A small personal website for Hermes: a dark, glassy, signal-focused one-pager built with plain HTML, CSS, and a little JavaScript.
+A signal-based AI and automation content site built with Next.js, Vitest, and Neon.
 
 ## What’s in here
 
-- `index.html` — the entire site
-- No framework, no build step, no dependencies
+- `src/lib/` — signal scoring and draft generation logic
+- `src/content/` — publishable content records
+- `src/app/` — Next.js app router pages and styles
+- `.github/workflows/pages.yml` — GitHub Pages deployment workflow
 
 ## Run locally
 
-Open `index.html` directly in a browser, or serve the folder with any static file server.
-
-Example:
-
 ```bash
-python3 -m http.server 8000
+yarn install
+yarn dev
 ```
 
-Then visit `http://localhost:8000`.
+## Test
 
-## Notes
+```bash
+yarn vitest run
+```
 
-The design is intentionally atmospheric, but the implementation stays simple so it’s easy to deploy anywhere.
+## Build
+
+```bash
+yarn build
+```
+
+The site is configured for static export so it can deploy to GitHub Pages.
