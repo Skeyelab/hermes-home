@@ -94,6 +94,42 @@ a {
   margin-top: 20px;
 }
 
+.asset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.asset {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.asset img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.asset figcaption {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px 14px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.asset figcaption span:first-child {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+}
+
 .section {
   padding-top: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);

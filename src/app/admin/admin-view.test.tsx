@@ -20,7 +20,15 @@ describe('AdminDraftsView', () => {
             sections: [
               { sectionKey: 'signal', heading: 'The signal', body: 'Body', sortOrder: 0 },
             ],
-            assets: [],
+            assets: [
+              {
+                kind: 'hero',
+                assetUrl: 'data:image/svg+xml;charset=UTF-8,%3Csvg%3E%3C/svg%3E',
+                prompt: 'Prompt',
+                altText: 'Hero image',
+                sortOrder: 0,
+              },
+            ],
           },
         ]}
       />,
@@ -30,5 +38,6 @@ describe('AdminDraftsView', () => {
     expect(html).toContain('review')
     expect(html).toContain('Approve')
     expect(html).toContain('Reject')
+    expect(html).toContain('Hero image')
   })
 })

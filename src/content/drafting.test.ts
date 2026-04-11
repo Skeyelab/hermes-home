@@ -55,6 +55,12 @@ describe('content drafting pipeline', () => {
       topic: 'automation',
     })
     expect(drafts[0].sections).toHaveLength(4)
+    expect(drafts[0].assets).toHaveLength(2)
+    expect(drafts[0].assets[0]).toMatchObject({
+      kind: 'hero',
+      sortOrder: 0,
+      altText: 'Gamma signal hero image',
+    })
     expect(drafts[0].sections.slice(0, 2)).toMatchObject([
       { sectionKey: 'the-signal-1', heading: 'The signal', body: 'Gamma summary', sortOrder: 0 },
       { sectionKey: 'why-it-matters-2', heading: 'Why it matters', body: 'Gamma evidence', sortOrder: 1 },
