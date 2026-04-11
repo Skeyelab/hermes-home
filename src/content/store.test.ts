@@ -17,7 +17,7 @@ describe('createNeonContentStore', () => {
               excerpt: 'First draft',
               topic: 'ai automation',
               status: 'draft',
-              generated_at: '2026-04-11T10:00:00Z',
+              generated_at: new Date('2026-04-11T10:00:00Z'),
               published_at: null,
             },
           ],
@@ -57,7 +57,7 @@ describe('createNeonContentStore', () => {
                 excerpt: 'First draft',
                 topic: 'ai automation',
                 status: 'review',
-                generated_at: '2026-04-11T10:00:00Z',
+                generated_at: new Date('2026-04-11T10:00:00Z'),
                 published_at: null,
               },
             ],
@@ -119,7 +119,7 @@ describe('createNeonContentStore', () => {
     const executor: ContentQueryExecutor = {
       query: async (sql, params) => {
         queries.push({ sql, params })
-        return { rows: [] }
+        return { rows: [{ id: 'draft-1' }] }
       },
     }
 
@@ -128,9 +128,21 @@ describe('createNeonContentStore', () => {
 
     expect(queries).toEqual([
       {
-        sql: expect.stringContaining('update draft_posts set status = $1'),
+        sql: expect.stringContaining('update draft_posts'),
         params: ['published', 'draft-one'],
       },
     ])
+  })
+
+  it('throws when a draft slug does not exist', async () => {
+    const executor: ContentQueryExecutor = {
+      query: async () => ({ rows: [] }),
+    }
+
+    const store = createNeonContentStore(executor)
+
+    await expect(store.updateDraftStatus('missing', 'published')).rejects.toThrow(
+      'No draft found for slug: missing',
+    )
   })
 })

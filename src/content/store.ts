@@ -36,6 +36,13 @@ export type DraftPostRecord = {
   assets: DraftAssetRecord[]
 }
 
+function normalizeTimestamp(value: unknown): string | null {
+  if (value == null) return null
+  if (value instanceof Date) return value.toISOString()
+  if (typeof value === 'string') return value
+  return String(value)
+}
+
 function toDraftPostRecord(row: any): DraftPostRecord {
   return {
     id: row.id,
@@ -45,8 +52,8 @@ function toDraftPostRecord(row: any): DraftPostRecord {
     excerpt: row.excerpt,
     topic: row.topic,
     status: row.status,
-    generatedAt: row.generated_at,
-    publishedAt: row.published_at,
+    generatedAt: normalizeTimestamp(row.generated_at) ?? new Date(0).toISOString(),
+    publishedAt: normalizeTimestamp(row.published_at),
     sections: [],
     assets: [],
   }
@@ -123,17 +130,36 @@ export function createNeonContentStore(executor: ContentQueryExecutor) {
     },
 
     async updateDraftStatus(slug: string, status: DraftStatus): Promise<void> {
-      await executor.query('update draft_posts set status = $1, published_at = case when $1 = \'published\' then coalesce(published_at, now()) else published_at end, updated_at = now() where slug = $2', [status, slug])
+      const result = await executor.query(
+        `update draft_posts
+         set status = $1,
+             published_at = case when $1 = 'published' then coalesce(published_at, now()) else published_at end,
+             updated_at = now()
+         where slug = $2
+         returning id`,
+        [status, slug],
+      )
+
+      if (result.rows.length === 0) {
+        throw new Error(`No draft found for slug: ${slug}`)
+      }
     },
   }
 }
 
+let cachedStore: ReturnType<typeof createNeonContentStore> | null = null
+
 export function createNeonContentStoreFromUrl() {
+  if (cachedStore) {
+    return cachedStore
+  }
+
   const databaseUrl = resolveDirectDatabaseUrl()
   const pool = new Pool({
     connectionString: databaseUrl,
     allowExitOnIdle: true,
   })
 
-  return createNeonContentStore(pool)
+  cachedStore = createNeonContentStore(pool)
+  return cachedStore
 }

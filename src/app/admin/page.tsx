@@ -4,7 +4,10 @@ import { approveDraftAction, rejectDraftAction } from './actions'
 
 export default async function AdminPage() {
   const store = createNeonContentStoreFromUrl()
-  const drafts = await store.listDraftPosts()
+  const summaryDrafts = await store.listDraftPosts()
+  const drafts = (
+    await Promise.all(summaryDrafts.map((draft) => store.getDraftPost(draft.slug)))
+  ).filter((draft): draft is NonNullable<typeof draft> => Boolean(draft))
 
   return (
     <AdminDraftsView
