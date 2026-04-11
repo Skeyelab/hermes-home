@@ -15,7 +15,7 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
 }
 
-export function scoreSignal(signal: SignalItem, now = new Date('2026-04-11T00:00:00Z')): number {
+export function scoreSignal(signal: SignalItem, now = new Date()): number {
   const publishedAt = new Date(signal.publishedAt)
   const ageDays = Math.max(0, (now.getTime() - publishedAt.getTime()) / DAY_MS)
   const recencyScore = clamp(1 - ageDays / 14, 0, 1)
