@@ -5,11 +5,12 @@ import { getPublishedArticleBySlug } from '../../../content/articles'
 export const dynamic = 'force-dynamic'
 
 type ArticlePageProps = {
-  params: any
+  params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
-  const article = await getPublishedArticleBySlug(params.slug)
+  const { slug } = await params
+  const article = await getPublishedArticleBySlug(slug)
   if (!article) {
     return {
       title: 'Article not found',
@@ -24,7 +25,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
-  const article = await getPublishedArticleBySlug(params.slug)
+  const { slug } = await params
+  const article = await getPublishedArticleBySlug(slug)
 
   if (!article) {
     notFound()

@@ -30,7 +30,7 @@ vi.mock('../../../content/articles', () => ({
 
 describe('topic page', () => {
   it('renders the topic archive for a topic slug', async () => {
-    const html = renderToStaticMarkup(await TopicPage({ params: { topic: 'ai-automation' } }))
+    const html = renderToStaticMarkup(await TopicPage({ params: Promise.resolve({ topic: 'ai-automation' }) }))
 
     expect(html).toContain('AI automation')
     expect(html).toContain('Automations are shifting toward agent handoffs')

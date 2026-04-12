@@ -8,11 +8,12 @@ import {
 export const dynamic = 'force-dynamic'
 
 type TopicPageProps = {
-  params: any
+  params: Promise<{ topic: string }>
 }
 
 export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
-  const topic = await getPublishedTopicBySlug(params.topic)
+  const { topic: topicSlug } = await params
+  const topic = await getPublishedTopicBySlug(topicSlug)
   if (!topic) {
     return {
       title: 'Topic not found',
@@ -27,8 +28,9 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
 }
 
 export default async function TopicPage({ params }: TopicPageProps) {
-  const topic = await getPublishedTopicBySlug(params.topic)
-  const articles = await getPublishedArticlesByTopic(params.topic)
+  const { topic: topicSlug } = await params
+  const topic = await getPublishedTopicBySlug(topicSlug)
+  const articles = await getPublishedArticlesByTopic(topicSlug)
 
   if (!topic || articles.length === 0) {
     notFound()
