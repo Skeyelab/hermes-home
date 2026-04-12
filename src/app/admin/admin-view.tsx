@@ -82,7 +82,7 @@ export function AdminDraftsView({
                     </div>
                   ))}
                 </div>
-                <div className="terminal-entry__actions admin-actions">
+                <div className="terminal-entry__actions">
                   <form action={approveAction}>
                     <input type="hidden" name="slug" value={draft.slug} />
                     <button type="submit">Approve</button>

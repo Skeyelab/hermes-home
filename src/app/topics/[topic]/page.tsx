@@ -64,7 +64,7 @@ export default async function TopicPage({ params }: TopicPageProps) {
             <article className="terminal-entry" key={article.slug}>
               <div className="terminal-entry__header">
                 <span>{article.topic}</span>
-                <span>{`Story ${String(index + 1).padStart(2, '0')}`}</span>
+                <span>{`Article ${String(index + 1).padStart(2, '0')}`}</span>
               </div>
               <div className="terminal-entry__body">
                 <h3>
