@@ -1,19 +1,15 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getPublishedArticleBySlug, getPublishedArticles } from '../../../content/articles'
+import { getPublishedArticleBySlug } from '../../../content/articles'
+
+export const dynamic = 'force-dynamic'
 
 type ArticlePageProps = {
   params: any
 }
 
-export function generateStaticParams() {
-  return getPublishedArticles().map((article) => ({
-    slug: article.slug,
-  }))
-}
-
-export function generateMetadata({ params }: ArticlePageProps): Metadata {
-  const article = getPublishedArticleBySlug(params.slug)
+export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
+  const article = await getPublishedArticleBySlug(params.slug)
   if (!article) {
     return {
       title: 'Article not found',
@@ -27,8 +23,8 @@ export function generateMetadata({ params }: ArticlePageProps): Metadata {
   }
 }
 
-export default function ArticlePage({ params }: ArticlePageProps) {
-  const article = getPublishedArticleBySlug(params.slug)
+export default async function ArticlePage({ params }: ArticlePageProps) {
+  const article = await getPublishedArticleBySlug(params.slug)
 
   if (!article) {
     notFound()

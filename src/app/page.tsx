@@ -1,8 +1,10 @@
 import { getPublishedArticles, getPublishedTopics } from '../content/articles'
 
-export default function Page() {
-  const articles = getPublishedArticles()
-  const topics = getPublishedTopics()
+export const dynamic = 'force-dynamic'
+
+export default async function Page() {
+  const articles = await getPublishedArticles()
+  const topics = await getPublishedTopics()
 
   return (
     <main className="site-shell">

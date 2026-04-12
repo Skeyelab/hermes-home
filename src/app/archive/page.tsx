@@ -6,9 +6,11 @@ export const metadata: Metadata = {
   description: 'Browse Hermes Signal articles, grouped by topic.',
 }
 
-export default function ArchivePage() {
-  const articles = getPublishedArticles()
-  const topics = getPublishedTopics()
+export const dynamic = 'force-dynamic'
+
+export default async function ArchivePage() {
+  const articles = await getPublishedArticles()
+  const topics = await getPublishedTopics()
 
   return (
     <main className="site-shell">
