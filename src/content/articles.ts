@@ -1,3 +1,4 @@
+import { draftPostFromSignal, type SignalInsight } from '../lib/drafts'
 import {
   createNeonContentStore,
   createNeonContentStoreFromUrl,
@@ -40,6 +41,14 @@ export type PublishedTopic = {
   count: number
 }
 
+type ArticleCatalog = {
+  getPublishedArticles: () => Promise<PublishedArticle[]>
+  getPublishedArticleBySlug: (slug: string) => Promise<PublishedArticle | null>
+  getPublishedArticlesByTopic: (topicSlug: string) => Promise<PublishedArticle[]>
+  getPublishedTopics: () => Promise<PublishedTopic[]>
+  getPublishedTopicBySlug: (topicSlug: string) => Promise<PublishedTopic | null>
+}
+
 function toPublishedArticle(record: DraftPostRecord): PublishedArticle {
   return {
     title: record.title,
@@ -55,51 +64,121 @@ function toPublishedArticle(record: DraftPostRecord): PublishedArticle {
   }
 }
 
+const fallbackSignal: SignalInsight = {
+  id: 'signal-1',
+  title: 'Automations are shifting toward agent handoffs',
+  source: 'hn',
+  url: 'https://example.com/signal-1',
+  publishedAt: '2026-04-11T00:00:00Z',
+  summary: 'People are discussing workflows where agents hand tasks to each other.',
+  evidence: [
+    'Repeated discussion across source posts',
+    'Docs and repos show more orchestration primitives',
+  ],
+  practicalTip: 'Use explicit state transitions and keep handoffs observable.',
+}
+
+const fallbackPublishedArticle: PublishedArticle = {
+  ...draftPostFromSignal(fallbackSignal),
+  topic: 'AI automation',
+  topicSlug: buildTopicSlug('AI automation'),
+}
+
+const fallbackPublishedTopics: PublishedTopic[] = [
+  {
+    topic: fallbackPublishedArticle.topic,
+    topicSlug: fallbackPublishedArticle.topicSlug,
+    count: 1,
+  },
+]
+
+function createSeededArticleCatalog(): ArticleCatalog {
+  return {
+    async getPublishedArticles() {
+      return [fallbackPublishedArticle]
+    },
+    async getPublishedArticleBySlug(slug: string) {
+      return fallbackPublishedArticle.slug === slug ? fallbackPublishedArticle : null
+    },
+    async getPublishedArticlesByTopic(topicSlug: string) {
+      return fallbackPublishedArticle.topicSlug === topicSlug ? [fallbackPublishedArticle] : []
+    },
+    async getPublishedTopics() {
+      return fallbackPublishedTopics
+    },
+    async getPublishedTopicBySlug(topicSlug: string) {
+      return fallbackPublishedTopics.find((topic) => topic.topicSlug === topicSlug) ?? null
+    },
+  }
+}
+
+const seededArticleCatalog = createSeededArticleCatalog()
+
 type ArticleStore = Pick<ReturnType<typeof createNeonContentStore>, 'listDraftPosts' | 'getDraftPost'>
 
-export function createArticleCatalog(store: ArticleStore) {
+export function createArticleCatalog(store: ArticleStore, fallbackCatalog: ArticleCatalog = seededArticleCatalog): ArticleCatalog {
   async function getPublishedArticles(): Promise<PublishedArticle[]> {
-    const summaries = await store.listDraftPosts('published')
-    const detailed = await Promise.all(summaries.map((s) => store.getDraftPost(s.slug)))
-    return detailed
-      .filter((r): r is DraftPostRecord => r !== null)
-      .map(toPublishedArticle)
+    try {
+      const summaries = await store.listDraftPosts('published')
+      const detailed = await Promise.all(summaries.map((s) => store.getDraftPost(s.slug)))
+      return detailed
+        .filter((r): r is DraftPostRecord => r !== null)
+        .map(toPublishedArticle)
+    } catch {
+      return fallbackCatalog.getPublishedArticles()
+    }
   }
 
   async function getPublishedArticleBySlug(slug: string): Promise<PublishedArticle | null> {
-    const record = await store.getDraftPost(slug)
-    if (!record || record.status !== 'published') return null
-    return toPublishedArticle(record)
+    try {
+      const record = await store.getDraftPost(slug)
+      if (!record || record.status !== 'published') return null
+      return toPublishedArticle(record)
+    } catch {
+      return fallbackCatalog.getPublishedArticleBySlug(slug)
+    }
   }
 
   async function getPublishedArticlesByTopic(topicSlug: string): Promise<PublishedArticle[]> {
-    const articles = await getPublishedArticles()
-    return articles.filter((a) => a.topicSlug === topicSlug)
+    try {
+      const articles = await getPublishedArticles()
+      return articles.filter((a) => a.topicSlug === topicSlug)
+    } catch {
+      return fallbackCatalog.getPublishedArticlesByTopic(topicSlug)
+    }
   }
 
   async function getPublishedTopics(): Promise<PublishedTopic[]> {
-    const articles = await getPublishedArticles()
-    const topics = new Map<string, PublishedTopic>()
+    try {
+      const articles = await getPublishedArticles()
+      const topics = new Map<string, PublishedTopic>()
 
-    for (const article of articles) {
-      const existing = topics.get(article.topicSlug)
-      if (existing) {
-        existing.count += 1
-        continue
+      for (const article of articles) {
+        const existing = topics.get(article.topicSlug)
+        if (existing) {
+          existing.count += 1
+          continue
+        }
+        topics.set(article.topicSlug, {
+          topic: article.topic,
+          topicSlug: article.topicSlug,
+          count: 1,
+        })
       }
-      topics.set(article.topicSlug, {
-        topic: article.topic,
-        topicSlug: article.topicSlug,
-        count: 1,
-      })
-    }
 
-    return [...topics.values()].sort((left, right) => left.topic.localeCompare(right.topic))
+      return [...topics.values()].sort((left, right) => left.topic.localeCompare(right.topic))
+    } catch {
+      return fallbackCatalog.getPublishedTopics()
+    }
   }
 
   async function getPublishedTopicBySlug(topicSlug: string): Promise<PublishedTopic | null> {
-    const topics = await getPublishedTopics()
-    return topics.find((t) => t.topicSlug === topicSlug) ?? null
+    try {
+      const topics = await getPublishedTopics()
+      return topics.find((t) => t.topicSlug === topicSlug) ?? null
+    } catch {
+      return fallbackCatalog.getPublishedTopicBySlug(topicSlug)
+    }
   }
 
   return {
@@ -115,11 +194,15 @@ export function createArticleCatalogFromExecutor(executor: ContentQueryExecutor)
   return createArticleCatalog(createNeonContentStore(executor))
 }
 
-let defaultCatalog: ReturnType<typeof createArticleCatalog> | null = null
+let defaultCatalog: ArticleCatalog | null = null
 
-function getDefaultCatalog(): ReturnType<typeof createArticleCatalog> {
+function getDefaultCatalog(): ArticleCatalog {
   if (!defaultCatalog) {
-    defaultCatalog = createArticleCatalog(createNeonContentStoreFromUrl())
+    try {
+      defaultCatalog = createArticleCatalog(createNeonContentStoreFromUrl())
+    } catch {
+      defaultCatalog = seededArticleCatalog
+    }
   }
   return defaultCatalog
 }

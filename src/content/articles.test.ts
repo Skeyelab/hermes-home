@@ -63,6 +63,14 @@ function makeMockExecutor(): ContentQueryExecutor {
   }
 }
 
+function makeFailingExecutor(): ContentQueryExecutor {
+  return {
+    query: async () => {
+      throw new Error('database unavailable')
+    },
+  }
+}
+
 describe('published article catalog', () => {
   it('returns publishable article records for the homepage', async () => {
     const catalog = createArticleCatalogFromExecutor(makeMockExecutor())
@@ -76,6 +84,19 @@ describe('published article catalog', () => {
       topicSlug: 'ai-automation',
     })
     expect(articles[0].sections[0].heading).toBe('The signal')
+  })
+
+  it('falls back to seeded content when the database executor fails', async () => {
+    const catalog = createArticleCatalogFromExecutor(makeFailingExecutor())
+    const articles = await catalog.getPublishedArticles()
+
+    expect(articles).toHaveLength(1)
+    expect(articles[0]).toMatchObject({
+      slug: ARTICLE_SLUG,
+      title: 'Automations are shifting toward agent handoffs',
+      topic: 'AI automation',
+      topicSlug: 'ai-automation',
+    })
   })
 
   it('supports archive and topic lookup helpers', async () => {
