@@ -25,55 +25,77 @@ export function AdminDraftsView({
         </p>
       </section>
 
-      <section className="articles" aria-label="Drafts">
-        {drafts.length === 0 ? (
-          <article className="card">
-            <p className="meta">No drafts yet</p>
-            <h2>Waiting for the next signal batch</h2>
-            <p>
-              Once Hermes ingests and drafts a topic, it will appear here for review and publishing.
-            </p>
-          </article>
-        ) : (
-          drafts.map((draft) => (
-            <article className="card" key={draft.slug}>
-              <p className="meta">
-                {draft.topic} · <span>{draft.status}</span>
-              </p>
-              <h2>{draft.title}</h2>
-              <p>{draft.excerpt}</p>
-              <div className="asset-grid" aria-label="Draft assets">
-                {draft.assets.map((asset) => (
-                  <figure key={`${draft.slug}-${asset.sortOrder}`} className="asset">
-                    <img alt={asset.altText} src={asset.assetUrl} loading="lazy" decoding="async" />
-                    <figcaption>
-                      <span>{asset.kind}</span>
-                      <span>{asset.prompt}</span>
-                    </figcaption>
-                  </figure>
-                ))}
+      <section className="terminal-section" aria-label="Drafts">
+        <div className="section-heading-row section-heading-row--compact">
+          <div>
+            <p className="eyebrow">Drafts</p>
+            <h2>Pending review</h2>
+          </div>
+        </div>
+        <div className="terminal-stream">
+          {drafts.length === 0 ? (
+            <div className="terminal-entry terminal-entry--empty">
+              <div className="terminal-entry__header">
+                <span>No drafts yet</span>
+                <span>Idle</span>
               </div>
-              <div className="sections">
-                {draft.sections.map((section) => (
-                  <div key={`${draft.slug}-${section.sectionKey}`} className="section">
-                    <h3>{section.heading}</h3>
-                    <p>{section.body}</p>
-                  </div>
-                ))}
+              <div className="terminal-entry__body">
+                <h3>Waiting for the next signal batch</h3>
+                <p>
+                  Once Hermes ingests and drafts a topic, it will appear here for review and
+                  publishing.
+                </p>
               </div>
-              <div className="admin-actions">
-                <form action={approveAction}>
-                  <input type="hidden" name="slug" value={draft.slug} />
-                  <button type="submit">Approve</button>
-                </form>
-                <form action={rejectAction}>
-                  <input type="hidden" name="slug" value={draft.slug} />
-                  <button type="submit">Reject</button>
-                </form>
-              </div>
-            </article>
-          ))
-        )}
+            </div>
+          ) : (
+            drafts.map((draft) => (
+              <article className="terminal-entry" key={draft.slug}>
+                <div className="terminal-entry__header">
+                  <span>{draft.topic}</span>
+                  <span>{draft.status}</span>
+                </div>
+                <div className="terminal-entry__body">
+                  <h3>{draft.title}</h3>
+                  <p>{draft.excerpt}</p>
+                </div>
+                <div className="asset-grid" aria-label="Draft assets">
+                  {draft.assets.map((asset) => (
+                    <figure key={`${draft.slug}-${asset.sortOrder}`} className="asset">
+                      <img
+                        alt={asset.altText}
+                        src={asset.assetUrl}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <figcaption>
+                        <span>{asset.kind}</span>
+                        <span>{asset.prompt}</span>
+                      </figcaption>
+                    </figure>
+                  ))}
+                </div>
+                <div className="sections">
+                  {draft.sections.map((section) => (
+                    <div key={`${draft.slug}-${section.sectionKey}`} className="section">
+                      <h3>{section.heading}</h3>
+                      <p>{section.body}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="terminal-entry__actions">
+                  <form action={approveAction}>
+                    <input type="hidden" name="slug" value={draft.slug} />
+                    <button type="submit">Approve</button>
+                  </form>
+                  <form action={rejectAction}>
+                    <input type="hidden" name="slug" value={draft.slug} />
+                    <button type="submit">Reject</button>
+                  </form>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
       </section>
     </main>
   )
