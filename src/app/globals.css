@@ -150,8 +150,7 @@ a:hover {
   align-items: center;
 }
 
-.hero-actions,
-.card-actions {
+.hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -178,9 +177,6 @@ a:hover {
 
 .lede,
 .panel-copy,
-.card > p,
-.workflow-card p,
-.story-card > p,
 .section p,
 .subtle {
   max-width: 64ch;
@@ -225,12 +221,6 @@ a:hover {
   color: var(--accent-strong);
   text-decoration: underline;
   text-underline-offset: 3px;
-}
-
-.articles {
-  display: grid;
-  gap: 18px;
-  margin-top: 18px;
 }
 
 .stat-grid {
@@ -362,18 +352,6 @@ a:hover {
   color: var(--accent-strong);
 }
 
-.card {
-  padding: 16px 0 0;
-  border-top: 1px solid var(--line);
-  border-radius: 0;
-  background: transparent;
-}
-
-.card h2 {
-  margin: 0;
-  font-size: clamp(1.3rem, 2vw, 1.8rem);
-}
-
 .subtle {
   color: var(--muted);
   font-size: 0.9rem;
@@ -476,7 +454,6 @@ a:hover {
   }
 
   .hero-actions,
-  .card-actions,
   .panel-cta {
     gap: 10px;
   }

@@ -52,23 +52,36 @@ export default async function TopicPage({ params }: TopicPageProps) {
         </div>
       </section>
 
-      <section className="articles" aria-label={`${topic.topic} articles`}>
-        {articles.map((article) => (
-          <article className="card" key={article.slug}>
-            <p className="meta">{article.publishedAt.slice(0, 10)}</p>
-            <h2>
-              <a className="inline-link" href={`/articles/${article.slug}/`}>
-                {article.title}
-              </a>
-            </h2>
-            <p>{article.excerpt}</p>
-            <div className="card-actions">
-              <a className="button button-secondary" href={`/articles/${article.slug}/`}>
-                Read article
-              </a>
-            </div>
-          </article>
-        ))}
+      <section className="terminal-section" aria-label={`${topic.topic} articles`}>
+        <div className="section-heading-row section-heading-row--compact">
+          <div>
+            <p className="eyebrow">Articles</p>
+            <h2>{topic.topic}</h2>
+          </div>
+        </div>
+        <div className="terminal-stream">
+          {articles.map((article, index) => (
+            <article className="terminal-entry" key={article.slug}>
+              <div className="terminal-entry__header">
+                <span>{article.topic}</span>
+                <span>{`Story ${String(index + 1).padStart(2, '0')}`}</span>
+              </div>
+              <div className="terminal-entry__body">
+                <h3>
+                  <a className="inline-link" href={`/articles/${article.slug}/`}>
+                    {article.title}
+                  </a>
+                </h3>
+                <p>{article.excerpt}</p>
+              </div>
+              <div className="terminal-entry__actions">
+                <a className="button button-secondary" href={`/articles/${article.slug}/`}>
+                  Read article
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
     </main>
   )
