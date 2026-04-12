@@ -2,6 +2,10 @@ import type { DraftPostRecord } from '../../content/store'
 
 export type AdminDraftsViewProps = {
   drafts: DraftPostRecord[]
+  operatorNotice?: {
+    title: string
+    body: string
+  }
   approveAction?: (formData: FormData) => void | Promise<void>
   rejectAction?: (formData: FormData) => void | Promise<void>
 }
@@ -12,6 +16,7 @@ async function noopAction() {
 
 export function AdminDraftsView({
   drafts,
+  operatorNotice,
   approveAction = noopAction,
   rejectAction = noopAction,
 }: AdminDraftsViewProps) {
@@ -33,6 +38,18 @@ export function AdminDraftsView({
           </div>
         </div>
         <div className="terminal-stream">
+          {operatorNotice ? (
+            <div className="terminal-entry terminal-entry--empty" role="status" aria-live="polite">
+              <div className="terminal-entry__header">
+                <span>Storage</span>
+                <span>Attention</span>
+              </div>
+              <div className="terminal-entry__body">
+                <h3>{operatorNotice.title}</h3>
+                <p>{operatorNotice.body}</p>
+              </div>
+            </div>
+          ) : null}
           {drafts.length === 0 ? (
             <div className="terminal-entry terminal-entry--empty">
               <div className="terminal-entry__header">
