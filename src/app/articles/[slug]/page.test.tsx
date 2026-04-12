@@ -23,7 +23,7 @@ vi.mock('../../../content/articles', () => ({
 describe('article page', () => {
   it('renders a published article from its slug', async () => {
     const html = renderToStaticMarkup(
-      await ArticlePage({ params: { slug: SLUG } }),
+      await ArticlePage({ params: Promise.resolve({ slug: SLUG }) }),
     )
 
     expect(html).toContain('Automations are shifting toward agent handoffs')
