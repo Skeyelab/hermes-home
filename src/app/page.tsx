@@ -2,66 +2,270 @@ import { getPublishedArticles, getPublishedTopics } from '../content/articles'
 
 export const dynamic = 'force-dynamic'
 
+type WorkflowStep = {
+  title: string
+  description: string
+}
+
+const WORKFLOW_STEPS: WorkflowStep[] = [
+  {
+    title: 'Ingest',
+    description: 'Signals are pulled from public sources, normalized, and ranked in Neon.',
+  },
+  {
+    title: 'Draft',
+    description: 'Hermes turns the strongest signals into structured drafts and assets.',
+  },
+  {
+    title: 'Publish',
+    description: 'A human approves the draft, and the public site renders it live.',
+  },
+]
+
+function formatCount(
+  count: number,
+  singular: string,
+  plural: string,
+  emptyLabel: string,
+): string {
+  if (count === 0) {
+    return emptyLabel
+  }
+
+  return `${count} ${count === 1 ? singular : plural}`
+}
+
 export default async function Page() {
   const articles = await getPublishedArticles()
   const topics = await getPublishedTopics()
 
+  const featuredArticle = articles[0] ?? null
+  const spotlightArticles = articles.slice(1, 4)
+  const articleCount = articles.length
+  const topicCount = topics.length
+  const primaryTopic = topics[0] ?? null
+
   return (
-    <main className="site-shell">
-      <section className="hero">
-        <p className="eyebrow">Hermes Signal</p>
-        <h1>Research-led AI and automation tips, published from signals instead of vibes.</h1>
-        <p className="lede">
-          Hermes watches the trend stream, filters for useful patterns, and turns them into
-          practical posts you can actually use.
-        </p>
-        <div className="hero-actions">
-          <a className="button" href="/archive/">
-            Browse the archive
-          </a>
-          {topics[0] ? (
-            <a className="button button-secondary" href={`/topics/${topics[0].topicSlug}/`}>
-              Browse {topics[0].topic}
+    <main className="site-shell homepage-shell">
+      <section className="hero hero-grid">
+        <div className="hero-copy">
+          <p className="eyebrow">Hermes Signal</p>
+          <h1>Editorial signal, shaped like a product instead of a blog dump.</h1>
+          <p className="lede">
+            Hermes watches the trend stream, turns useful patterns into drafts, and publishes the
+            result with a calm, high-contrast reading experience.
+          </p>
+          <div className="hero-actions">
+            <a className="button" href="/archive/">
+              Browse the archive
             </a>
-          ) : null}
+            {primaryTopic ? (
+              <a className="button button-secondary" href={`/topics/${primaryTopic.topicSlug}/`}>
+                Browse {primaryTopic.topic}
+              </a>
+            ) : null}
+          </div>
+
+          <div className="stat-grid" aria-label="Publication stats">
+            <div className="stat">
+              <span className="stat-label">Published stories</span>
+              <strong>{formatCount(articleCount, 'story', 'stories', 'No stories yet')}</strong>
+            </div>
+            <div className="stat">
+              <span className="stat-label">Tracked topics</span>
+              <strong>{formatCount(topicCount, 'topic', 'topics', 'No topics yet')}</strong>
+            </div>
+            <div className="stat">
+              <span className="stat-label">Asset-rich drafts</span>
+              <strong>{featuredArticle ? `${featuredArticle.assets.length} visuals` : 'Ready to publish'}</strong>
+            </div>
+          </div>
+        </div>
+
+        <aside className="hero-panel" aria-label="Live publication status">
+          {featuredArticle ? (
+            <>
+              <p className="panel-label">Live pulse</p>
+              <h2>{featuredArticle.title}</h2>
+              <p className="panel-copy">{featuredArticle.excerpt}</p>
+
+              <div className="panel-facts">
+                <div>
+                  <span>Primary topic</span>
+                  <strong>{primaryTopic ? primaryTopic.topic : 'None yet'}</strong>
+                </div>
+                <div>
+                  <span>Latest article</span>
+                  <strong>{featuredArticle.publishedAt.slice(0, 10)}</strong>
+                </div>
+                <div>
+                  <span>Assets generated</span>
+                  <strong>{featuredArticle.assets.length}</strong>
+                </div>
+                <div>
+                  <span>Content mode</span>
+                  <strong>Live archive</strong>
+                </div>
+              </div>
+
+              <div className="panel-cta">
+                <a className="button button-secondary" href={`/articles/${featuredArticle.slug}/`}>
+                  Read the featured article
+                </a>
+                <a className="inline-link" href={`/topics/${featuredArticle.topicSlug}/`}>
+                  Browse this topic
+                </a>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="panel-label">Getting started</p>
+              <h2>Signals are waiting to become stories.</h2>
+              <p className="panel-copy">
+                Run the ingest and draft jobs, then approve a draft in the admin area to populate
+                this publication surface.
+              </p>
+
+              <div className="panel-facts">
+                <div>
+                  <span>Step 1</span>
+                  <strong>Ingest signals</strong>
+                </div>
+                <div>
+                  <span>Step 2</span>
+                  <strong>Draft article</strong>
+                </div>
+                <div>
+                  <span>Step 3</span>
+                  <strong>Approve publish</strong>
+                </div>
+                <div>
+                  <span>Content mode</span>
+                  <strong>Awaiting drafts</strong>
+                </div>
+              </div>
+
+              <div className="panel-cta">
+                <a className="button button-secondary" href="/admin/">
+                  Open admin
+                </a>
+                <a className="inline-link" href="/archive/">
+                  See the archive
+                </a>
+              </div>
+            </>
+          )}
+        </aside>
+      </section>
+
+      <section className="terminal-section" aria-label="Content engine workflow">
+        <div className="section-heading-row section-heading-row--compact">
+          <div>
+            <p className="eyebrow">Workflow</p>
+            <h2>Content engine</h2>
+          </div>
+          <span className="subtle">Plain readout of the ingest → draft → publish path.</span>
+        </div>
+
+        <div className="terminal-stream">
+          {WORKFLOW_STEPS.map((step, index) => (
+            <div className="terminal-entry" key={step.title}>
+              <span className="terminal-entry__index">{String(index + 1).padStart(2, '0')}</span>
+              <div className="terminal-entry__body">
+                <p className="meta">{step.title}</p>
+                <p>{step.description}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="articles" aria-label="Published articles">
-        {articles.map((article) => (
-          <article className="card" key={article.slug}>
-            <p className="meta">{article.topic}</p>
-            <h2>{article.title}</h2>
-            <p>{article.excerpt}</p>
-            <div className="card-actions">
-              <a className="button button-secondary" href={`/articles/${article.slug}/`}>
-                Read article
-              </a>
-              <a className="inline-link" href={`/topics/${article.topicSlug}/`}>
-                Browse topic
-              </a>
+      <section className="terminal-section" aria-label="Published articles">
+        <div className="section-heading-row section-heading-row--compact">
+          <div>
+            <p className="eyebrow">Latest stories</p>
+            <h2>Published signals</h2>
+          </div>
+          <a className="inline-link" href="/archive/">
+            Open the archive
+          </a>
+        </div>
+
+        <div className="terminal-stream">
+          {featuredArticle ? (
+            <article className="terminal-entry terminal-entry--featured" key={featuredArticle.slug}>
+              <div className="terminal-entry__header">
+                <span>{featuredArticle.topic}</span>
+                <span>Featured</span>
+              </div>
+              <div className="terminal-entry__body">
+                <h3>{featuredArticle.title}</h3>
+                <p>{featuredArticle.excerpt}</p>
+              </div>
+              <div className="terminal-entry__actions">
+                <a className="button button-secondary" href={`/articles/${featuredArticle.slug}/`}>
+                  Read article
+                </a>
+                <a className="inline-link" href={`/topics/${featuredArticle.topicSlug}/`}>
+                  Browse topic
+                </a>
+              </div>
+            </article>
+          ) : (
+            <div className="terminal-entry terminal-entry--empty">
+              <div className="terminal-entry__header">
+                <span>No stories yet</span>
+                <span>Idle</span>
+              </div>
+              <div className="terminal-entry__body">
+                <h3>Waiting for the next batch</h3>
+                <p>
+                  Once Hermes ingests and drafts a topic, it will appear here as a plain text log
+                  entry instead of a card.
+                </p>
+              </div>
             </div>
-            <div className="asset-grid" aria-label="Article assets">
-              {article.assets.map((asset) => (
-                <figure key={`${article.slug}-${asset.sortOrder}`} className="asset">
-                  <img alt={asset.altText} src={asset.assetUrl} loading="lazy" decoding="async" />
-                  <figcaption>
-                    <span>{asset.kind}</span>
-                    <span>{asset.prompt}</span>
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-            <div className="sections">
-              {article.sections.map((section) => (
-                <div key={section.heading} className="section">
-                  <h3>{section.heading}</h3>
-                  <p>{section.body}</p>
-                </div>
-              ))}
-            </div>
-          </article>
-        ))}
+          )}
+
+          {spotlightArticles.map((article, index) => (
+            <article className="terminal-entry" key={article.slug}>
+              <div className="terminal-entry__header">
+                <span>{article.topic}</span>
+                <span>{`Story ${String(index + 2).padStart(2, '0')}`}</span>
+              </div>
+              <div className="terminal-entry__body">
+                <h3>{article.title}</h3>
+                <p>{article.excerpt}</p>
+              </div>
+              <div className="terminal-entry__actions">
+                <a className="button button-secondary" href={`/articles/${article.slug}/`}>
+                  Read article
+                </a>
+                <a className="inline-link" href={`/topics/${article.topicSlug}/`}>
+                  Browse topic
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="terminal-section terminal-section--topics">
+        <div className="section-heading-row section-heading-row--compact">
+          <div>
+            <p className="eyebrow">Topics</p>
+            <h2>Signals by theme</h2>
+          </div>
+          <span className="subtle">Browse what Hermes is tracking right now.</span>
+        </div>
+        <div className="topic-list topic-list--plain">
+          {topics.map((topic) => (
+            <a className="topic-link" href={`/topics/${topic.topicSlug}/`} key={topic.topicSlug}>
+              <span>{topic.topic}</span>
+              <span>{topic.count}</span>
+            </a>
+          ))}
+        </div>
       </section>
     </main>
   )
