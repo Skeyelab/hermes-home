@@ -23,14 +23,15 @@ describe('draftPostFromSignal', () => {
       'automations-are-shifting-toward-agent-handoffs-20260411-signal-1',
     )
     expect(draft.title).toBe('Automations are shifting toward agent handoffs')
-    expect(draft.excerpt).toContain('observable')
+    expect(draft.excerpt).toBe(
+      'Operators are learning that handoffs become the system once more than one agent is involved.',
+    )
     expect(draft.sections.map((section) => section.heading)).toEqual([
-      'The signal',
+      'What showed up',
       'Why it matters',
-      'A practical tip',
-      'What to do next',
+      'Operator note',
     ])
-    expect(draft.sections[0].body).toContain('agents hand tasks to each other')
-    expect(draft.sections[2].body).toContain('explicit state transitions')
+    expect(draft.sections[0].body).toContain('handoff rules become the real product')
+    expect(draft.sections[2].body).toContain('state changes, ownership, and retry rules')
   })
 })

@@ -54,6 +54,24 @@ function makeMockExecutor(): ContentQueryExecutor {
               body: 'People are discussing workflows where agents hand tasks to each other.',
               sort_order: 0,
             },
+            {
+              section_key: 'why-it-matters',
+              heading: 'Why it matters',
+              body: 'Repeated discussion across source posts Docs and repos show more orchestration primitives',
+              sort_order: 1,
+            },
+            {
+              section_key: 'a-practical-tip',
+              heading: 'A practical tip',
+              body: 'Use explicit state transitions and keep handoffs observable.',
+              sort_order: 2,
+            },
+            {
+              section_key: 'what-to-do-next',
+              heading: 'What to do next',
+              body: 'Turn the pattern into a repeatable checklist, then test it on one narrow workflow before expanding.',
+              sort_order: 3,
+            },
           ],
         }
       }
@@ -82,8 +100,22 @@ describe('published article catalog', () => {
       title: 'Automations are shifting toward agent handoffs',
       topic: 'AI automation',
       topicSlug: 'ai-automation',
+      excerpt: 'Operators are learning that handoffs become the system once more than one agent is involved.',
     })
-    expect(articles[0].sections[0].heading).toBe('The signal')
+    expect(articles[0].sections).toEqual([
+      {
+        heading: 'What showed up',
+        body: 'Teams keep running into the same pattern: once multiple agents touch a workflow, the handoff rules become the real product.',
+      },
+      {
+        heading: 'Why it matters',
+        body: 'The tooling is improving, but most failures still happen between steps: lost context, unclear ownership, and retries nobody can explain after the fact.',
+      },
+      {
+        heading: 'Operator note',
+        body: 'Write down state changes, ownership, and retry rules before adding another agent to the loop.',
+      },
+    ])
   })
 
   it('falls back to seeded content when the database executor fails', async () => {
@@ -96,7 +128,22 @@ describe('published article catalog', () => {
       title: 'Automations are shifting toward agent handoffs',
       topic: 'AI automation',
       topicSlug: 'ai-automation',
+      excerpt: 'Operators are learning that handoffs become the system once more than one agent is involved.',
     })
+    expect(articles[0].sections).toEqual([
+      {
+        heading: 'What showed up',
+        body: 'Teams keep running into the same pattern: once multiple agents touch a workflow, the handoff rules become the real product.',
+      },
+      {
+        heading: 'Why it matters',
+        body: 'The tooling is improving, but most failures still happen between steps: lost context, unclear ownership, and retries nobody can explain after the fact.',
+      },
+      {
+        heading: 'Operator note',
+        body: 'Write down state changes, ownership, and retry rules before adding another agent to the loop.',
+      },
+    ])
   })
 
   it('supports archive and topic lookup helpers', async () => {

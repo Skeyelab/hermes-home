@@ -50,7 +50,7 @@ type ArticleCatalog = {
 }
 
 function toPublishedArticle(record: DraftPostRecord): PublishedArticle {
-  return {
+  const article: PublishedArticle = {
     title: record.title,
     slug: record.slug,
     excerpt: record.excerpt,
@@ -61,6 +61,40 @@ function toPublishedArticle(record: DraftPostRecord): PublishedArticle {
     topicSlug: buildTopicSlug(record.topic),
     sections: record.sections,
     assets: record.assets,
+  }
+
+  return normalizePublishedArticle(article)
+}
+
+function normalizePublishedArticle(article: PublishedArticle): PublishedArticle {
+  const legacySectionHeadings = article.sections.map((section) => section.heading)
+  const isLegacyAutoDraft =
+    article.excerpt ===
+      'People are discussing workflows where agents hand tasks to each other. The practical takeaway is to keep the workflow observable and explicit.' ||
+    JSON.stringify(legacySectionHeadings) ===
+      JSON.stringify(['The signal', 'Why it matters', 'A practical tip', 'What to do next'])
+
+  if (!isLegacyAutoDraft) {
+    return article
+  }
+
+  return {
+    ...article,
+    excerpt: 'Operators are learning that handoffs become the system once more than one agent is involved.',
+    sections: [
+      {
+        heading: 'What showed up',
+        body: 'Teams keep running into the same pattern: once multiple agents touch a workflow, the handoff rules become the real product.',
+      },
+      {
+        heading: 'Why it matters',
+        body: 'The tooling is improving, but most failures still happen between steps: lost context, unclear ownership, and retries nobody can explain after the fact.',
+      },
+      {
+        heading: 'Operator note',
+        body: 'Write down state changes, ownership, and retry rules before adding another agent to the loop.',
+      },
+    ],
   }
 }
 

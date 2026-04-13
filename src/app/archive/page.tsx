@@ -16,11 +16,8 @@ export default async function ArchivePage() {
     <main className="site-shell">
       <section className="hero">
         <p className="eyebrow">Archive</p>
-        <h1>Published Hermes Signal articles, grouped by topic.</h1>
-        <p className="lede">
-          Hermes keeps the public site small and navigable: each article is grounded in a signal,
-          and the archive makes the content easy to scan by topic.
-        </p>
+        <h1>Recent articles, indexed by topic.</h1>
+        <p className="lede">Small archive. Clear topics. No endless feed.</p>
         <div className="hero-actions">
           <a className="button" href="/">
             Back to home
