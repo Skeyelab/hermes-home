@@ -23,10 +23,12 @@ vi.mock('../../content/articles', () => ({
 }))
 
 describe('archive page', () => {
-  it('renders the archive view with topic and article links', async () => {
+  it('renders a plainspoken archive view with topic and article links', async () => {
     const html = renderToStaticMarkup(await ArchivePage())
 
-    expect(html).toContain('Published Hermes Signal articles, grouped by topic.')
+    expect(html).toContain('Recent articles, indexed by topic.')
+    expect(html).toContain('Small archive. Clear topics. No endless feed.')
+    expect(html).not.toContain('Published Hermes Signal articles, grouped by topic.')
     expect(html).toContain('/topics/ai-automation/')
     expect(html).toContain(`/articles/${SLUG}/`)
   })

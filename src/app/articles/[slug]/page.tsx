@@ -48,10 +48,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         <p className="lede">{article.excerpt}</p>
         <div className="hero-actions">
           <a className="button" href="/archive/">
-            Back to archive
+            Archive
           </a>
           <a className="button button-secondary" href={`/topics/${article.topicSlug}/`}>
-            More {article.topic}
+            Topic archive
           </a>
         </div>
       </section>
@@ -62,8 +62,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <figure key={`${article.slug}-${asset.sortOrder}`} className="asset">
               <img alt={asset.altText} src={asset.assetUrl} loading="lazy" decoding="async" />
               <figcaption>
-                <span>{asset.kind}</span>
-                <span>{asset.prompt}</span>
+                <span>{asset.altText}</span>
               </figcaption>
             </figure>
           ))}

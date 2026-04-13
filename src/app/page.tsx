@@ -10,15 +10,15 @@ type WorkflowStep = {
 const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     title: 'Ingest',
-    description: 'Signals are pulled from public sources, normalized, and ranked in Neon.',
+    description: 'Signals come in from public sources and get ranked.',
   },
   {
     title: 'Draft',
-    description: 'Hermes turns the strongest signals into structured drafts and assets.',
+    description: 'Hermes turns the strongest signal into a draft worth editing.',
   },
   {
     title: 'Publish',
-    description: 'A human approves the draft, and the public site renders it live.',
+    description: 'A person reviews the draft and decides whether it belongs in the archive.',
   },
 ]
 
@@ -50,10 +50,10 @@ export default async function Page() {
       <section className="hero hero-grid">
         <div className="hero-copy">
           <p className="eyebrow">Hermes Signal</p>
-          <h1>Editorial signal, shaped like a product instead of a blog dump.</h1>
+          <h1>A narrow reading room for AI automation signals.</h1>
           <p className="lede">
-            Hermes watches the trend stream, turns useful patterns into drafts, and publishes the
-            result with a calm, high-contrast reading experience.
+            Hermes tracks a small set of patterns, drafts the useful ones, and publishes
+            only the pieces worth keeping.
           </p>
           <div className="hero-actions">
             <a className="button" href="/archive/">
@@ -164,7 +164,7 @@ export default async function Page() {
             <p className="eyebrow">Workflow</p>
             <h2>Content engine</h2>
           </div>
-          <span className="subtle">Plain readout of the ingest → draft → publish path.</span>
+          <span className="subtle">A plain readout of how an article gets from source to archive.</span>
         </div>
 
         <div className="terminal-stream">
@@ -256,7 +256,7 @@ export default async function Page() {
             <p className="eyebrow">Topics</p>
             <h2>Signals by theme</h2>
           </div>
-          <span className="subtle">Browse what Hermes is tracking right now.</span>
+          <span className="subtle">Browse the topics currently on the shelf.</span>
         </div>
         <div className="topic-list topic-list--plain">
           {topics.map((topic) => (

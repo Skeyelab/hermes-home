@@ -54,7 +54,7 @@ describe('content drafting pipeline', () => {
       slug: 'gamma-signal-20260412-signal-c',
       topic: 'automation',
     })
-    expect(drafts[0].sections).toHaveLength(4)
+    expect(drafts[0].sections).toHaveLength(3)
     expect(drafts[0].assets).toHaveLength(2)
     expect(drafts[0].assets[0]).toMatchObject({
       kind: 'hero',
@@ -62,8 +62,18 @@ describe('content drafting pipeline', () => {
       altText: 'Gamma signal hero image',
     })
     expect(drafts[0].sections.slice(0, 2)).toMatchObject([
-      { sectionKey: 'the-signal-1', heading: 'The signal', body: 'Gamma summary', sortOrder: 0 },
-      { sectionKey: 'why-it-matters-2', heading: 'Why it matters', body: 'Gamma evidence', sortOrder: 1 },
+      {
+        sectionKey: 'what-showed-up-1',
+        heading: 'What showed up',
+        body: 'Gamma summary',
+        sortOrder: 0,
+      },
+      {
+        sectionKey: 'why-it-matters-2',
+        heading: 'Why it matters',
+        body: 'Gamma evidence',
+        sortOrder: 1,
+      },
     ])
     expect(drafts[1]).toMatchObject({
       signalItemId: 'db-2',

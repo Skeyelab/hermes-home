@@ -23,11 +23,13 @@ vi.mock('../../src/content/articles', () => ({
 }))
 
 describe('homepage', () => {
-  it('renders the redesigned publication home screen', async () => {
+  it('renders a tighter editorial homepage without marketing fluff', async () => {
     const html = renderToStaticMarkup(await Page())
 
     expect(html).toContain('Hermes Signal')
-    expect(html).toContain('Editorial signal, shaped like a product instead of a blog dump.')
+    expect(html).toContain('A narrow reading room for AI automation signals.')
+    expect(html).toContain('Hermes tracks a small set of patterns, drafts the useful ones, and publishes only the pieces worth keeping.')
+    expect(html).not.toContain('product instead of a blog dump')
     expect(html).toContain('Live pulse')
     expect(html).toContain('Published stories')
     expect(html).toContain('Content engine workflow')

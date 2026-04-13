@@ -41,7 +41,7 @@ export default async function TopicPage({ params }: TopicPageProps) {
       <section className="hero">
         <p className="eyebrow">Topic</p>
         <h1>{topic.topic}</h1>
-        <p className="lede">All Hermes Signal articles currently published under this topic.</p>
+        <p className="lede">Every published piece filed under this topic.</p>
         <div className="hero-actions">
           <a className="button" href="/archive/">
             Back to archive

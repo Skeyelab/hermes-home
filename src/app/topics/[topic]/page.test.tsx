@@ -29,10 +29,12 @@ vi.mock('../../../content/articles', () => ({
 }))
 
 describe('topic page', () => {
-  it('renders the topic archive for a topic slug', async () => {
+  it('renders a tighter topic archive for a topic slug', async () => {
     const html = renderToStaticMarkup(await TopicPage({ params: Promise.resolve({ topic: 'ai-automation' }) }))
 
     expect(html).toContain('AI automation')
+    expect(html).toContain('Every published piece filed under this topic.')
+    expect(html).not.toContain('All Hermes Signal articles currently published under this topic.')
     expect(html).toContain('Automations are shifting toward agent handoffs')
     expect(html).toContain(`/articles/${SLUG}/`)
   })

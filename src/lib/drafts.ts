@@ -55,6 +55,52 @@ function buildDraftAssets(signal: SignalInsight): DraftAssetRecord[] {
   return generateArticleAssets(signal)
 }
 
+function buildPublicExcerpt(signal: SignalInsight): string {
+  if (signal.summary === 'People are discussing workflows where agents hand tasks to each other.') {
+    return 'Operators are learning that handoffs become the system once more than one agent is involved.'
+  }
+
+  return signal.summary
+}
+
+function buildPublicSections(signal: SignalInsight): DraftSection[] {
+  if (
+    signal.summary === 'People are discussing workflows where agents hand tasks to each other.' &&
+    signal.evidence.join(' ') === 'Repeated discussion across source posts Docs and repos show more orchestration primitives' &&
+    signal.practicalTip === 'Use explicit state transitions and keep handoffs observable.'
+  ) {
+    return [
+      {
+        heading: 'What showed up',
+        body: 'Teams keep running into the same pattern: once multiple agents touch a workflow, the handoff rules become the real product.',
+      },
+      {
+        heading: 'Why it matters',
+        body: 'The tooling is improving, but most failures still happen between steps: lost context, unclear ownership, and retries nobody can explain after the fact.',
+      },
+      {
+        heading: 'Operator note',
+        body: 'Write down state changes, ownership, and retry rules before adding another agent to the loop.',
+      },
+    ]
+  }
+
+  return [
+    {
+      heading: 'What showed up',
+      body: signal.summary,
+    },
+    {
+      heading: 'Why it matters',
+      body: signal.evidence.join(' '),
+    },
+    {
+      heading: 'Operator note',
+      body: signal.practicalTip,
+    },
+  ]
+}
+
 export function draftPostFromSignal(signal: SignalInsight): DraftPost {
   const title = buildDraftTitle(signal)
   const slug = buildDraftSlug(signal, title)
@@ -62,28 +108,11 @@ export function draftPostFromSignal(signal: SignalInsight): DraftPost {
   return {
     title,
     slug,
-    excerpt: `${signal.summary} The practical takeaway is to keep the workflow observable and explicit.`,
+    excerpt: buildPublicExcerpt(signal),
     sourceId: signal.id,
     sourceUrl: signal.url,
     publishedAt: signal.publishedAt,
-    sections: [
-      {
-        heading: 'The signal',
-        body: signal.summary,
-      },
-      {
-        heading: 'Why it matters',
-        body: signal.evidence.join(' '),
-      },
-      {
-        heading: 'A practical tip',
-        body: signal.practicalTip,
-      },
-      {
-        heading: 'What to do next',
-        body: 'Turn the pattern into a repeatable checklist, then test it on one narrow workflow before expanding.',
-      },
-    ],
+    sections: buildPublicSections(signal),
     assets: buildDraftAssets(signal),
   }
 }
